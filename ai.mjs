@@ -1,7 +1,7 @@
 import {OpenAI} from "openai"
  
 const client = new OpenAI({
-    apiKey: "sk-DMMzS0pZ82AuhkuLYTBa1if4M9RGaz9O7tnQrTDcvd1p9bbe",    
+    apiKey: "***",    
     baseURL: "https://api.moonshot.cn/v1",
 });
  

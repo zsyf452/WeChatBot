@@ -91,11 +91,11 @@ async function onMessage(msg)
         // 当前对象是第一次发消息所以初始化
         if(_object == undefined)
         {
-            _object = {count:0,text:msg.text}
+            _object = {count:0,text:msg.text()}
         }
 
         //如果当前值和之前的值一样就+1并判断是否超过阈值
-        if(_object.text == msg.text)
+        if(_object.text == msg.text())
         {
            _object.count += 1;
            if(_object.count == maxRepeatCount)
@@ -110,7 +110,7 @@ async function onMessage(msg)
         }
         else
         {
-            _object.text = msg.text;
+            _object.text = msg.text();
         }
         
         chatObjectHashTable.set(talker.name(),_object);

@@ -5,6 +5,9 @@ import QRCode from 'qrcode-terminal';
 // const { QRCode } = terminal;
 import {kimi_reply} from "./ai.mjs"
 
+
+const maxRepeatCount = 3;
+let chatObjectHashTable = new Map();
 let is_pause = false
 const bot = WechatyBuilder.build();
 
@@ -83,7 +86,37 @@ async function onMessage(msg)
         
     
         console.log("用户",talker.name(),"已发送文本",msg.text());
-    
+        let _object = chatObjectHashTable.get(talker.name())
+        
+        // 当前对象是第一次发消息所以初始化
+        if(_object == undefined)
+        {
+            _object = {count:0,text:msg.text}
+        }
+
+        //如果当前值和之前的值一样就+1并判断是否超过阈值
+        if(_object.text == msg.text)
+        {
+           _object.count += 1;
+           if(_object.count == maxRepeatCount)
+            {
+                _object.count = 0;
+                chatObjectHashTable.set(talker.name(),_object)
+
+                const fileHelper = bot.Contact.load('filehelper'); 
+                await fileHelper.say(talker.name()+"的对话已被拦截");
+                return
+            }    
+        }
+        else
+        {
+            _object.text = msg.text;
+        }
+        
+        chatObjectHashTable.set(talker.name(),_object);
+
+
+
         let text = await kimi_reply("因为我由于某些原因无法跟跟你聊天的人对话，所以你将扮演我跟他(或她)聊天，解答他(或她)提出的问题",msg.text())
         text += "(本人不在，此文本由ai生成,此ai无法联系上下文)"
         console.log("文本内容: ",text);

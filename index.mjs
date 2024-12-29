@@ -23,6 +23,8 @@ function onScan(qrcode, status)
 async function onLogin(user) 
 {
     console.log(`${user} 登录了`);
+    const fileHelper = bot.Contact.load('filehelper'); 
+    await fileHelper.say("自动回复机器人启动");
     // let fileHelper = await bot.Contact.find({ name: '文件传输助手' });
     // if (fileHelper) 
     // { 
@@ -38,16 +40,34 @@ async function onMessage(msg)
     if(msg.self)
     {
         
+        let command = ''
+        let is_command = true
         switch(msg.text())
         {
             case "暂停":
                 is_pause = true;
-                console.log("暂停",is_pause);
+                command = "已暂停"
+                console.log(command,is_pause);
                 break;
             case "继续":
+                command = "已继续"
                 is_pause = false;
-                console.log("继续",is_pause);
+                console.log(command,is_pause);
                 break;
+            case "退出":
+                bot.stop();
+                command = "已退出"
+                console.log(command);
+                process.exit()
+                break;
+            default:
+                is_command = false
+                break;
+        }
+        if(is_command)
+        {
+            const fileHelper = bot.Contact.load('filehelper'); 
+            await fileHelper.say(command);
         }
     }
     if(is_pause)
@@ -82,4 +102,8 @@ async function main() {
     console.log('Wechaty 机器人启动成功');
 }
 
-main().catch(e => console.error(e));
+main().catch((e)=>
+{
+    process.exit()
+});
+// main()
